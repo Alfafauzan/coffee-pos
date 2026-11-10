@@ -1,0 +1,1958 @@
+{
+  "info": {
+    "_postman_id": "7941296b-5fb9-4025-938b-dda161589e15",
+    "name": "Coffee Shop POS",
+    "description": "Postman Collection skeleton lengkap untuk Coffee Shop Point of Sales (POS) API berdasarkan PRD.md, SCHEMA.md, dan API_CONTRACT.md.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string",
+      "description": "Base URL API (Local: http://localhost:8080, Production: https://yourdomain.com)"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string",
+      "description": "JWT Access Token hasil login"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Login user (Owner atau Cashier) dan menghasilkan token JWT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"cashier_budi\",\n  \"password\": \"Password123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var res = pm.response.json();",
+                  "    if (res.data && res.data.token) {",
+                  "        pm.environment.set('token', res.data.token);",
+                  "        pm.collectionVariables.set('token', res.data.token);",
+                  "        console.log('Token successfully set!');",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Profile (Me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Mengambil data profil pengguna yang sedang login"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories?include_inactive=false",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ],
+              "query": [
+                {
+                  "key": "include_inactive",
+                  "value": "false",
+                  "description": "Sertakan kategori nonaktif jika true"
+                }
+              ]
+            },
+            "description": "Melihat semua kategori produk"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ]
+            },
+            "description": "Owner menambahkan kategori baru",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Manual Brew\",\n  \"description\": \"V60, Aeropress, Kalita Wave\",\n  \"sort_order\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "c1f73b64-845f-4a37-b6bb-293774659f10",
+                  "description": "ID Kategori"
+                }
+              ]
+            },
+            "description": "Owner memperbarui data kategori",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Manual Brew & Single Origin\",\n  \"description\": \"Metode seduh manual biji kopi pilihan\",\n  \"sort_order\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "c1f73b64-845f-4a37-b6bb-293774659f10",
+                  "description": "ID Kategori"
+                }
+              ]
+            },
+            "description": "Owner menghapus kategori (soft delete)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products?category_id=&status=ACTIVE&search=&page=1&limit=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "category_id",
+                  "value": "",
+                  "description": "Filter berdasarkan UUID kategori"
+                },
+                {
+                  "key": "status",
+                  "value": "ACTIVE",
+                  "description": "Filter status: ACTIVE / INACTIVE"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Pencarian berdasarkan nama produk atau SKU"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Nomor halaman"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Jumlah data per halaman"
+                }
+              ]
+            },
+            "description": "Daftar produk dengan filter dan paginasi"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "9a0a1f23-6490-449e-b530-31dbce077a21",
+                  "description": "ID Produk"
+                }
+              ]
+            },
+            "description": "Melihat detail 1 produk spesifik"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products"
+              ]
+            },
+            "description": "Owner menambahkan menu produk baru",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": \"c1f73b64-845f-4a37-b6bb-293774659f10\",\n  \"sku\": \"COF-AMR-002\",\n  \"name\": \"Iced Americano\",\n  \"description\": \"Double espresso shot dengan air dingin dan es batu\",\n  \"price\": 2500000,\n  \"cogs\": 800000,\n  \"initial_stock\": 50,\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "52d9a60e-26f6-4a17-b0a3-a7ebf97e2030",
+                  "description": "ID Produk"
+                }
+              ]
+            },
+            "description": "Owner memperbarui informasi produk",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": \"c1f73b64-845f-4a37-b6bb-293774659f10\",\n  \"name\": \"Iced Americano Grande\",\n  \"description\": \"Double espresso shot dingin ukuran besar\",\n  \"price\": 2800000,\n  \"cogs\": 900000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Product Image",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/:id/image",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products",
+                ":id",
+                "image"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "52d9a60e-26f6-4a17-b0a3-a7ebf97e2030",
+                  "description": "ID Produk"
+                }
+              ]
+            },
+            "description": "Upload foto produk menggunakan multipart/form-data",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "Foto produk (JPG/PNG maks 2MB)"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Product Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/:id/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products",
+                ":id",
+                "status"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "52d9a60e-26f6-4a17-b0a3-a7ebf97e2030",
+                  "description": "ID Produk"
+                }
+              ]
+            },
+            "description": "Owner mengubah status produk menjadi ACTIVE / INACTIVE",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"INACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "52d9a60e-26f6-4a17-b0a3-a7ebf97e2030",
+                  "description": "ID Produk"
+                }
+              ]
+            },
+            "description": "Owner menghapus produk (soft delete)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Stock",
+      "item": [
+        {
+          "name": "Get Stock Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stocks?low_stock=false&page=1&limit=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "stocks"
+              ],
+              "query": [
+                {
+                  "key": "low_stock",
+                  "value": "false",
+                  "description": "Filter produk dengan stok menipis"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Halaman"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Limit per halaman"
+                }
+              ]
+            },
+            "description": "Owner memantau stok fisik seluruh menu"
+          },
+          "response": []
+        },
+        {
+          "name": "Stock In (Restock)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stocks/in",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "stocks",
+                "in"
+              ]
+            },
+            "description": "Owner melakukan penambahan stok masuk",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": \"9a0a1f23-6490-449e-b530-31dbce077a21\",\n  \"quantity\": 30,\n  \"reference_id\": \"PO/2026/11/045\",\n  \"notes\": \"Restock supplier beans mingguan\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Stock Adjustment (Waste/Loss)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stocks/adjustment",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "stocks",
+                "adjustment"
+              ]
+            },
+            "description": "Owner mencatat penyesuaian stok atau produk rusak/tumpah",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": \"9a0a1f23-6490-449e-b530-31dbce077a21\",\n  \"quantity_change\": -3,\n  \"notes\": \"Botol sirup pecah dan tumpah saat operasional\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Stock Movements History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stocks/movements?product_id=&movement_type=&start_date=2026-11-01&end_date=2026-11-11&page=1&limit=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "stocks",
+                "movements"
+              ],
+              "query": [
+                {
+                  "key": "product_id",
+                  "value": "",
+                  "description": "Filter UUID produk tertentu"
+                },
+                {
+                  "key": "movement_type",
+                  "value": "",
+                  "description": "Filter tipe: IN / OUT_SALE / ADJUSTMENT"
+                },
+                {
+                  "key": "start_date",
+                  "value": "2026-11-01",
+                  "description": "Filter tanggal mulai"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2026-11-11",
+                  "description": "Filter tanggal selesai"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Halaman"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Limit per halaman"
+                }
+              ]
+            },
+            "description": "Melihat audit log mutasi pergerakan stok"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Tables",
+      "item": [
+        {
+          "name": "Get All Tables",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/tables?status=AVAILABLE",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tables"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "AVAILABLE",
+                  "description": "Filter status meja: AVAILABLE / OCCUPIED / INACTIVE"
+                }
+              ]
+            },
+            "description": "Melihat denah dan status ketersediaan meja"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Table",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/tables",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tables"
+              ]
+            },
+            "description": "Owner mendaftarkan nomor meja baru",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"table_number\": \"BAR-01\",\n  \"capacity\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Table",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/tables/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tables",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "673f309a-09d1-419b-a010-994df58a0b05",
+                  "description": "ID Meja"
+                }
+              ]
+            },
+            "description": "Owner memperbarui nomor atau kapasitas meja",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"table_number\": \"BAR-01-VIP\",\n  \"capacity\": 3,\n  \"status\": \"AVAILABLE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Table",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/tables/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tables",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "673f309a-09d1-419b-a010-994df58a0b05",
+                  "description": "ID Meja"
+                }
+              ]
+            },
+            "description": "Owner menghapus meja (soft delete)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cashiers",
+      "item": [
+        {
+          "name": "Get All Cashiers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/cashiers?status=ACTIVE&page=1&limit=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "cashiers"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "ACTIVE",
+                  "description": "Filter status: ACTIVE / SUSPENDED"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Halaman"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Limit per halaman"
+                }
+              ]
+            },
+            "description": "Owner melihat daftar akun staf kasir"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Cashier",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/cashiers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "cashiers"
+              ]
+            },
+            "description": "Owner mendaftarkan staf kasir baru",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"cashier_siti\",\n  \"email\": \"siti@yourcoffee.com\",\n  \"password\": \"KasirPassword2026!\",\n  \"full_name\": \"Siti Rahmawati\",\n  \"phone_number\": \"089876543210\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Cashier Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/cashiers/:id/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "cashiers",
+                ":id",
+                "status"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "f82b7194-91f4-4e4b-97e3-11bfa0940381",
+                  "description": "ID User Kasir"
+                }
+              ]
+            },
+            "description": "Owner menangguhkan (suspend) atau mengaktifkan akun kasir",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"SUSPENDED\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Cashier Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/cashiers/:id/reset-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "cashiers",
+                ":id",
+                "reset-password"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "f82b7194-91f4-4e4b-97e3-11bfa0940381",
+                  "description": "ID User Kasir"
+                }
+              ]
+            },
+            "description": "Owner mereset kata sandi akun kasir",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"new_password\": \"NewSecretPassword2026!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Cashier",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/cashiers/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "cashiers",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "f82b7194-91f4-4e4b-97e3-11bfa0940381",
+                  "description": "ID User Kasir"
+                }
+              ]
+            },
+            "description": "Owner menghapus akun kasir (soft delete)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Promos",
+      "item": [
+        {
+          "name": "Get All Promos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/promos?status=ACTIVE",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "promos"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "ACTIVE",
+                  "description": "Filter status promo: ACTIVE / INACTIVE"
+                }
+              ]
+            },
+            "description": "Melihat daftar voucher diskon yang tersedia"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Promo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/promos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "promos"
+              ]
+            },
+            "description": "Owner membuat program diskon baru",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"PAYDAY30\",\n  \"name\": \"Diskon Gajian 30%\",\n  \"discount_type\": \"PERCENTAGE\",\n  \"discount_value\": 30,\n  \"max_discount_amount\": 2500000,\n  \"min_order_amount\": 6000000,\n  \"start_date\": \"2026-11-25T00:00:00Z\",\n  \"end_date\": \"2026-11-30T23:59:59Z\",\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Promo",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/promos/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "promos",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "7f8b91a2-3344-5566-7788-99aabbccdde0",
+                  "description": "ID Promo"
+                }
+              ]
+            },
+            "description": "Owner menghapus voucher promo (soft delete)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Dashboard Revenue Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/reports/dashboard?period=daily",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reports",
+                "dashboard"
+              ],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "daily",
+                  "description": "Periode laporan: daily / weekly / monthly"
+                }
+              ]
+            },
+            "description": "Ringkasan omzet, diskon, jumlah pesanan, dan metode bayar"
+          },
+          "response": []
+        },
+        {
+          "name": "Top Selling Products",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/reports/top-products?start_date=2026-10-11&end_date=2026-11-11&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reports",
+                "top-products"
+              ],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2026-10-11",
+                  "description": "Tanggal awal"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2026-11-11",
+                  "description": "Tanggal akhir"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Jumlah produk teratas"
+                }
+              ]
+            },
+            "description": "Laporan produk terlaris berdasarkan kuantitas & nominal"
+          },
+          "response": []
+        },
+        {
+          "name": "Cashier Performance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/reports/cashier-performance?start_date=2026-11-01&end_date=2026-11-11",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reports",
+                "cashier-performance"
+              ],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2026-11-01",
+                  "description": "Tanggal awal"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2026-11-11",
+                  "description": "Tanggal akhir"
+                }
+              ]
+            },
+            "description": "Laporan performa penjualan dan selisih kas per staf kasir"
+          },
+          "response": []
+        },
+        {
+          "name": "Export Orders to CSV",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/reports/export/orders?start_date=2026-11-01&end_date=2026-11-11&status=PAID",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reports",
+                "export",
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2026-11-01",
+                  "description": "Tanggal awal (YYYY-MM-DD)"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2026-11-11",
+                  "description": "Tanggal akhir (YYYY-MM-DD)"
+                },
+                {
+                  "key": "status",
+                  "value": "PAID",
+                  "description": "Status transaksi order"
+                }
+              ]
+            },
+            "description": "Mengunduh file CSV detail transaksi pesanan"
+          },
+          "response": []
+        },
+        {
+          "name": "Export Stock Movements to CSV",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/reports/export/stocks?start_date=2026-11-01&end_date=2026-11-11",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reports",
+                "export",
+                "stocks"
+              ],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2026-11-01",
+                  "description": "Tanggal awal (YYYY-MM-DD)"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2026-11-11",
+                  "description": "Tanggal akhir (YYYY-MM-DD)"
+                }
+              ]
+            },
+            "description": "Mengunduh file CSV riwayat pergerakan stok"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Shifts",
+      "item": [
+        {
+          "name": "Get Current Active Shift",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/shifts/current",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "shifts",
+                "current"
+              ]
+            },
+            "description": "Mengecek sesi shift kasir login yang sedang terbuka"
+          },
+          "response": []
+        },
+        {
+          "name": "Open Shift",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/shifts/open",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "shifts",
+                "open"
+              ]
+            },
+            "description": "Kasir membuka shift kerja dengan modal awal kas",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"start_cash\": 20000000,\n  \"notes\": \"Modal awal kas kecil pecahan Rp 5rb, 10rb, 20rb\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Close Shift",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/shifts/close",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "shifts",
+                "close"
+              ]
+            },
+            "description": "Kasir menutup shift dan menginput rekonsiliasi kas fisik aktual",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"end_cash_actual\": 51500000,\n  \"notes\": \"Kas closing shift 1 rapi, selisih minus 500 rupiah karena tidak ada kembalian perak\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/orders",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders"
+              ]
+            },
+            "description": "Kasir membuat pesanan baru (Dine-in / Takeaway)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_type\": \"DINE_IN\",\n  \"table_id\": \"t1a7e2b1-1234-5678-90ab-cdef12345678\",\n  \"promo_code\": \"NGOPISANTAI20\",\n  \"customer_notes\": \"Meja di dekat stopkontak\",\n  \"payment_method\": \"MIDTRANS_SNAP\",\n  \"items\": [\n    {\n      \"product_id\": \"9a0a1f23-6490-449e-b530-31dbce077a21\",\n      \"quantity\": 2,\n      \"notes\": \"1 Less Sugar, 1 Normal\"\n    },\n    {\n      \"product_id\": \"52d9a60e-26f6-4a17-b0a3-a7ebf97e2030\",\n      \"quantity\": 1,\n      \"notes\": \"Extra Ice\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Validate Promo for Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/orders/validate-promo",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "validate-promo"
+              ]
+            },
+            "description": "Validasi voucher promo dan hitung nominal diskon sebelum checkout",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"promo_code\": \"NGOPISANTAI20\",\n  \"subtotal_amount\": 9200000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current Shift Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/orders/shift/current?status=&page=1&limit=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "shift",
+                "current"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "Filter status order: PAID / PENDING / CANCELLED"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Halaman"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Limit per halaman"
+                }
+              ]
+            },
+            "description": "Daftar transaksi yang diproses selama shift berjalan kasir"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/orders/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "ord-7193-4e2a-8921-998822aabbcc",
+                  "description": "ID Order Transaksi"
+                }
+              ]
+            },
+            "description": "Melihat rincian struk lengkap pesanan"
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/orders/:id/cancel",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                ":id",
+                "cancel"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "ord-7193-4e2a-8921-998822aabbcc",
+                  "description": "ID Order Transaksi"
+                }
+              ]
+            },
+            "description": "Membatalkan pesanan yang belum dibayar (status PENDING)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Pelanggan membatalkan pesanan sebelum pembayaran\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Generate Midtrans Snap Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/payments/snap-token",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "snap-token"
+              ]
+            },
+            "description": "Menghasilkan token pembayaran Snap untuk QRIS / E-Wallet / VA",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"ord-7193-4e2a-8921-998822aabbcc\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Process Cash Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/payments/cash",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "cash"
+              ]
+            },
+            "description": "Pelunasan pesanan menggunakan uang tunai (Cash)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"ord-7193-4e2a-8921-998822aabbcc\",\n  \"cash_given\": 10000000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Check / Sync Payment Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/payments/:order_id/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                ":order_id",
+                "status"
+              ],
+              "variable": [
+                {
+                  "key": "order_id",
+                  "value": "ord-7193-4e2a-8921-998822aabbcc",
+                  "description": "ID Order"
+                }
+              ]
+            },
+            "description": "Pengecekan sinkronisasi manual status transaksi ke Midtrans"
+          },
+          "response": []
+        },
+        {
+          "name": "Midtrans Webhook Notification Callback",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/payments/midtrans/webhook",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "midtrans",
+                "webhook"
+              ]
+            },
+            "description": "Endpoint publik penerima callback webhook notifikasi pembayaran dari server Midtrans",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transaction_time\": \"2026-11-11 08:31:40\",\n  \"transaction_status\": \"settlement\",\n  \"transaction_id\": \"c1f73b64-845f-4a37-b6bb-293774659f10\",\n  \"status_message\": \"midtrans payment notification\",\n  \"status_code\": \"200\",\n  \"signature_key\": \"9a7f8e123bc56d78a99a7f8e123bc56d78a99a7f8e123bc56d78a99a7f8e123bc5\",\n  \"payment_type\": \"qris\",\n  \"order_id\": \"INV/20261111/0001\",\n  \"merchant_id\": \"G123456789\",\n  \"gross_amount\": \"77000.00\",\n  \"fraud_status\": \"accept\",\n  \"currency\": \"IDR\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
