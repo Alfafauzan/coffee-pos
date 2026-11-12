@@ -23,6 +23,7 @@ type Config struct {
     RedisPassword string
 
     JWTSecret      string
+    JWTExpireHours int
     JWTExpiryHours int
 
     MidtransServerKey string
@@ -55,16 +56,18 @@ func Load() (*Config, error) {
         MidtransEnv:       getEnv("MIDTRANS_ENV", "sandbox"),
     }
 
-    // Parse JWT expiry hours
-    if v := os.Getenv("JWT_EXPIRY_HOURS"); v != "" {
-        hours, err := strconv.Atoi(v)
-        if err != nil {
-            return nil, fmt.Errorf("JWT_EXPIRY_HOURS harus berupa angka, dapat: %s", v)
-        }
-        cfg.JWTExpiryHours = hours
-    } else {
-        cfg.JWTExpiryHours = 24
+    // Parse JWT expire hours
+    cfg.JWTExpireHours = 24
+    expireEnv := os.Getenv("JWT_EXPIRE_HOURS")
+    if expireEnv == "" {
+        expireEnv = os.Getenv("JWT_EXPIRY_HOURS")
     }
+    if expireEnv != "" {
+        if hours, err := strconv.Atoi(expireEnv); err == nil {
+            cfg.JWTExpireHours = hours
+        }
+    }
+    cfg.JWTExpiryHours = cfg.JWTExpireHours
 
     // Validasi field wajib
     required := map[string]string{

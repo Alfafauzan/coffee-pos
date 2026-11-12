@@ -1,16 +1,26 @@
 package handler
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/Alfafauzan/coffee-pos/config"
+	"github.com/Alfafauzan/coffee-pos/pkg/validator"
 )
 
 func TestNewRouter_Health(t *testing.T) {
-	router := NewRouter("development")
+	cfg := &config.Config{
+		AppEnv:         "development",
+		JWTSecret:      "test-secret",
+		JWTExpireHours: 24,
+	}
+	v := validator.New()
+	router := NewRouter(&sql.DB{}, cfg, v)
 
 	req, err := http.NewRequest(http.MethodGet, "/api/v1/health", nil)
 	if err != nil {
@@ -39,12 +49,16 @@ func TestNewRouter_Health(t *testing.T) {
 }
 
 func TestNewRouter_Modes(t *testing.T) {
-	_ = NewRouter("production")
+	v := validator.New()
+
+	prodCfg := &config.Config{AppEnv: "production", JWTSecret: "secret", JWTExpireHours: 24}
+	_ = NewRouter(&sql.DB{}, prodCfg, v)
 	if gin.Mode() != gin.ReleaseMode {
 		t.Errorf("expected ReleaseMode in production, got: %s", gin.Mode())
 	}
 
-	_ = NewRouter("development")
+	devCfg := &config.Config{AppEnv: "development", JWTSecret: "secret", JWTExpireHours: 24}
+	_ = NewRouter(&sql.DB{}, devCfg, v)
 	if gin.Mode() != gin.DebugMode {
 		t.Errorf("expected DebugMode in development, got: %s", gin.Mode())
 	}

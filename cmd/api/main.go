@@ -10,6 +10,7 @@ import (
 	"github.com/Alfafauzan/coffee-pos/internal/handler"
 	"github.com/Alfafauzan/coffee-pos/pkg/database"
 	"github.com/Alfafauzan/coffee-pos/pkg/redis"
+	"github.com/Alfafauzan/coffee-pos/pkg/validator"
 )
 
 func main() {
@@ -35,7 +36,8 @@ func main() {
 	fmt.Println("Redis connected.")
 
 	// 3. Inisialisasi Gin router
-	r := handler.NewRouter(cfg.AppEnv)
+	v := validator.New()
+	r := handler.NewRouter(db, cfg, v)
 
 	// 4. Jalankan server HTTP
 	log.Printf("Starting server on port :%s", cfg.AppPort)

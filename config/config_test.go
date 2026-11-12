@@ -27,6 +27,7 @@ func clearTestEnv() {
 	os.Unsetenv("REDIS_PORT")
 	os.Unsetenv("REDIS_PASSWORD")
 	os.Unsetenv("JWT_SECRET")
+	os.Unsetenv("JWT_EXPIRE_HOURS")
 	os.Unsetenv("JWT_EXPIRY_HOURS")
 	os.Unsetenv("MIDTRANS_SERVER_KEY")
 	os.Unsetenv("MIDTRANS_CLIENT_KEY")
@@ -45,6 +46,9 @@ func TestLoadSuccess(t *testing.T) {
 
 	if cfg.DBHost != "127.0.0.1" {
 		t.Errorf("expected DBHost 127.0.0.1, got: %s", cfg.DBHost)
+	}
+	if cfg.JWTExpireHours != 24 {
+		t.Errorf("expected default JWTExpireHours 24, got: %d", cfg.JWTExpireHours)
 	}
 	if cfg.JWTExpiryHours != 24 {
 		t.Errorf("expected default JWTExpiryHours 24, got: %d", cfg.JWTExpiryHours)
@@ -82,7 +86,7 @@ func TestLoadMissingRequiredFields(t *testing.T) {
 func TestCustomJWTExpiry(t *testing.T) {
 	clearTestEnv()
 	setValidEnv()
-	os.Setenv("JWT_EXPIRY_HOURS", "48")
+	os.Setenv("JWT_EXPIRE_HOURS", "48")
 	defer clearTestEnv()
 
 	cfg, err := Load()
@@ -90,7 +94,26 @@ func TestCustomJWTExpiry(t *testing.T) {
 		t.Fatalf("expected no error, got: %v", err)
 	}
 
+	if cfg.JWTExpireHours != 48 {
+		t.Errorf("expected JWTExpireHours 48, got: %d", cfg.JWTExpireHours)
+	}
 	if cfg.JWTExpiryHours != 48 {
 		t.Errorf("expected JWTExpiryHours 48, got: %d", cfg.JWTExpiryHours)
+	}
+}
+
+func TestInvalidJWTExpiryFallback(t *testing.T) {
+	clearTestEnv()
+	setValidEnv()
+	os.Setenv("JWT_EXPIRE_HOURS", "not-a-number")
+	defer clearTestEnv()
+
+	cfg, err := Load()
+	if err != nil {
+		t.Fatalf("expected fallback without error, got: %v", err)
+	}
+
+	if cfg.JWTExpireHours != 24 {
+		t.Errorf("expected default fallback 24, got: %d", cfg.JWTExpireHours)
 	}
 }
